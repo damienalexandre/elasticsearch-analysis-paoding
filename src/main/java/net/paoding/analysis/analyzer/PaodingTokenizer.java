@@ -195,6 +195,7 @@ public final class PaodingTokenizer extends Tokenizer implements Collector {
 		}
 		// 返回tokensIteractor下一个Token对象
 		Token token = tokenIteractor.next();
+		clearAttributes();	// Tokenizer's contract requires that subclasses which override incrementToken() must call clearAttributes() before setting attributes.
 		termAtt.append(token.toString());
 		offsetAtt.setOffset(correctOffset(token.startOffset()),
 				correctOffset(token.endOffset()));

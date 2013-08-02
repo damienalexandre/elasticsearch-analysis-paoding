@@ -23,21 +23,12 @@ import java.io.Reader;
 public class PaodingTokenizerFactory extends AbstractTokenizerFactory {
 
     private String seg_type;
-    private TokenCollector collector;
     private Paoding paoding;
 
     @Inject
     public PaodingTokenizerFactory(Index index, @IndexSettings Settings indexSettings,Environment env, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
         seg_type = settings.get("collector", "most_word");
-        if(seg_type.equals("most_word")){
-            collector = new MostWordsTokenCollector();
-        }else if(seg_type.equals("max_word_len")){
-            collector = new MaxWordLengthTokenCollector();
-        }else {
-            //default is max_word_len
-            collector = new MaxWordLengthTokenCollector();
-        }
         String config_path= new File(env.configFile(),"paoding/paoding-analyzer.properties").getPath();
         String dict_path= new File(env.configFile(),"paoding/dic").getPath();
         paoding =PaodingMaker.make(config_path,dict_path);
@@ -45,6 +36,15 @@ public class PaodingTokenizerFactory extends AbstractTokenizerFactory {
 
     @Override
     public Tokenizer create(Reader reader) {
+        TokenCollector collector;
+        if(seg_type.equals("most_word")){
+            collector = new MostWordsTokenCollector();
+//      }else if(seg_type.equals("max_word_len")){
+//          collector = new MaxWordLengthTokenCollector();
+        }else {
+            //default is max_word_len
+            collector = new MaxWordLengthTokenCollector();
+        }
 //      logger.info(paoding+","+collector);
       return new PaodingTokenizer(reader,paoding,collector);
     }
